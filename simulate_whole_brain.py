@@ -27,10 +27,19 @@ SOURCE_ROOT_ID = "720575940628038808"
 
 
 def load_edges_batched(batch_size):
-    """Load the full edge list in compact typed arrays, not pandas frames."""
+    """Stream edges into disk-backed typed arrays without a full RAM copy."""
     path = DATA / "Connectivity_783.parquet"
     parquet = pq.ParquetFile(path)
-    pre_parts, post_parts, weight_parts = [], [], []
+    RESULTS.mkdir(parents=True, exist_ok=True)
+    cache_dir = RESULTS / "cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    capacity = parquet.metadata.num_rows
+    pre_path = cache_dir / "connectome_pre.i32"
+    post_path = cache_dir / "connectome_post.i32"
+    weight_path = cache_dir / "connectome_weight.f32"
+    pre_store = np.memmap(pre_path, mode="w+", dtype=np.int32, shape=(capacity,))
+    post_store = np.memmap(post_path, mode="w+", dtype=np.int32, shape=(capacity,))
+    weight_store = np.memmap(weight_path, mode="w+", dtype=np.float32, shape=(capacity,))
     rows = 0
     print("Reading full connectivity in compact batches...")
     for number, batch in enumerate(
@@ -47,18 +56,23 @@ def load_edges_batched(batch_size):
         post = batch.column(post_col).to_numpy(zero_copy_only=False).astype(np.int32, copy=False)
         weight = batch.column(weight_col).to_numpy(zero_copy_only=False).astype(np.float32, copy=False)
         keep = pre != post
-        pre_parts.append(pre[keep].copy())
-        post_parts.append(post[keep].copy())
-        weight_parts.append(weight[keep].copy())
-        rows += int(keep.sum())
+        count = int(keep.sum())
+        stop = rows + count
+        pre_store[rows:stop] = pre[keep]
+        post_store[rows:stop] = post[keep]
+        weight_store[rows:stop] = weight[keep]
+        rows = stop
         print(f"  batches read: {number}; connections retained: {rows:,}", end="\r")
         del batch, pre, post, weight, keep
     print()
-    pre = np.concatenate(pre_parts)
-    post = np.concatenate(post_parts)
-    weight = np.concatenate(weight_parts)
-    del pre_parts, post_parts, weight_parts
+    pre_store.flush()
+    post_store.flush()
+    weight_store.flush()
+    del pre_store, post_store, weight_store
     gc.collect()
+    pre = np.memmap(pre_path, mode="r", dtype=np.int32, shape=(capacity,))[:rows]
+    post = np.memmap(post_path, mode="r", dtype=np.int32, shape=(capacity,))[:rows]
+    weight = np.memmap(weight_path, mode="r", dtype=np.float32, shape=(capacity,))[:rows]
     return pre, post, weight
 
 

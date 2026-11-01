@@ -49,7 +49,7 @@ This builds 50×10, 100×20, and 150×30 strongest-link samples, runs paired mea
 ## Project layout
 
 - `simulate_visual_hub.py` — streams the large connectivity table in batches and simulates sampled circuits.
-- `simulate_whole_brain.py` — experimental full-v783 LIF pilot that streams connections into compact numeric arrays and adds Brian2 synapses in bounded chunks. It may still need several GB of available memory and can be slow on the NumPy backend.
+- `simulate_whole_brain.py` — experimental full-v783 LIF pilot that streams connections into disk-backed numeric arrays and adds Brian2 synapses in bounded chunks. It may still need several GB of available memory and can be slow on the NumPy backend.
 - `run_sensitivity.py` — automates three sample sizes.
 - `run_project.py` / `run_project.bat` — one-command default pipeline / Windows launcher.
 - `analyze_connectome.py`, `label_hubs.py`, `compare_superclasses.py`, `inspect_visual_hubs.py` — connectome structure and annotation analyses.
@@ -59,13 +59,13 @@ This builds 50×10, 100×20, and 150×30 strongest-link samples, runs paired mea
 
 ## Next phase: scale toward the full brain
 
-The data contain connectivity for about 138,639 neurons and more than 15 million directed neuron-pair connections. The first full-brain attempt exceeded available memory because the table was expanded into a large in-memory data frame. `simulate_whole_brain.py` now reads the edges in batches into compact numeric arrays and is the first full-network pilot. Start with one short run:
+The data contain connectivity for about 138,639 neurons and more than 15 million directed neuron-pair connections. The first full-brain attempts exceeded available memory while loading and connecting all edges at once. `simulate_whole_brain.py` now streams edge batches directly to local disk-backed arrays and builds Brian2 synapses in bounded chunks. Start with one short run:
 
 ```powershell
 python simulate_whole_brain.py --duration-ms 200
 ```
 
-This is a resource-intensive exploratory run; stop it with Ctrl+C if memory use becomes excessive. The network connections are added in 250,000-edge chunks by default; lower `--connection-chunk-size` if setup still runs out of memory. It writes an event file and active-neuron table locally (ignored by Git), plus a compact run summary. If this still exceeds memory or takes too long, the next step is a sparse or neuropil-partitioned implementation. The small-subnetwork result remains a baseline, not a claim that full-brain scaling is solved.
+This is a resource-intensive exploratory run; stop it with Ctrl+C if memory use becomes excessive. It temporarily writes about 180 MB of numeric edge-cache files under `results/whole_brain/cache/`; these are ignored by Git. The network connections are added in 250,000-edge chunks by default; lower `--connection-chunk-size` if setup still runs out of memory. It writes an event file and active-neuron table locally (ignored by Git), plus a compact run summary. If this still exceeds memory or takes too long, the next step is a sparse or neuropil-partitioned implementation. The small-subnetwork result remains a baseline, not a claim that full-brain scaling is solved.
 
 ## Sources and attribution
 
