@@ -1,0 +1,12 @@
+outgoing_connections,incoming_connections,neuron_index,root_id,super_class,cell_type,top_nt,side
+8454,1416,85900,720575940628038808,visual_centrifugal,cM15,acetylcholine,left
+7787,1403,102727,720575940631190016,visual_centrifugal,cM15,acetylcholine,right
+6153,836,109989,720575940632777320,visual_centrifugal,OA-AL2b2,acetylcholine,right
+5798,1331,16213,720575940613065130,visual_centrifugal,cL21,gaba,right
+5784,789,74593,720575940626044942,visual_centrifugal,OA-AL2b2,acetylcholine,right
+5759,1390,35141,720575940618444473,visual_centrifugal,cL21,gaba,left
+5754,1417,69626,720575940625049781,visual_centrifugal,cL21,gaba,left
+5683,798,85630,720575940627996285,visual_centrifugal,OA-AL2b2,acetylcholine,left
+5630,743,71912,720575940625525740,visual_centrifugal,OA-AL2b2,acetylcholine,left
+5544,1286,118536,720575940635684762,visual_centrifugal,cL21,gaba,right
+

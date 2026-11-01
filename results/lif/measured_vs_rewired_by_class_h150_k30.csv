@@ -1,0 +1,14 @@
+condition,super_class,mean_active_neurons,sd_active_neurons,mean_spikes,trials_with_activity
+measured,central,0.6,0.5163977794943222,0.9,6
+measured,descending,2.0,1.247219128924647,3.2,9
+measured,optic,168.6,28.107729265176236,504.1,10
+measured,sensory,0.0,0.0,0.0,0
+measured,visual_centrifugal,4.1,0.31622776601683794,47.7,10
+measured,visual_projection,10.5,2.4608038433722332,28.4,10
+rewired,central,2.4,1.07496769977314,9.2,10
+rewired,descending,1.3,1.4944341180973262,3.2,6
+rewired,optic,124.0,16.613247725836153,396.9,10
+rewired,sensory,0.2,0.4216370213557839,0.4,2
+rewired,visual_centrifugal,2.0,2.160246899469287,3.8,6
+rewired,visual_projection,5.1,1.9692073983655907,9.9,10
+

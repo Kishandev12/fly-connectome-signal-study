@@ -1,0 +1,12 @@
+trial,measured_active_downstream_neurons,rewired_active_downstream_neurons,measured_minus_rewired_active_downstream_neurons,measured_downstream_spikes,rewired_downstream_spikes,measured_minus_rewired_downstream_spikes
+0,136,102,34,442,325,117
+1,212,150,62,757,547,210
+2,205,150,55,529,391,138
+3,207,150,57,478,348,130
+4,151,116,35,401,293,108
+5,152,123,29,446,329,117
+6,201,148,53,646,469,177
+7,219,148,71,902,650,252
+8,159,115,44,380,267,113
+9,216,148,68,862,615,247
+

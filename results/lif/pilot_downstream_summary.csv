@@ -1,0 +1,12 @@
+run,super_class,mean_active_neurons,sd_active_neurons,mean_spikes,trials_with_activity
+cL21 (GABA),central,0.0,0.0,0.0,0
+cL21 (GABA),descending,0.0,0.0,0.0,0
+cL21 (GABA),optic,0.0,0.0,0.0,0
+cL21 (GABA),visual_centrifugal,0.0,0.0,0.0,0
+cL21 (GABA),visual_projection,0.0,0.0,0.0,0
+cM15 (ACh),central,0.6,0.5163977794943222,0.9,6
+cM15 (ACh),descending,2.0,1.247219128924647,3.1,9
+cM15 (ACh),optic,123.0,6.253887679764573,430.0,10
+cM15 (ACh),visual_centrifugal,4.0,0.0,47.6,10
+cM15 (ACh),visual_projection,7.2,1.3165611772087666,20.4,10
+

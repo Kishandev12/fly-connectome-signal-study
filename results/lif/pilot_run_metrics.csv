@@ -1,0 +1,4 @@
+run,spikes_excluding_source,downstream_neurons_with_spikes
+cL21 (GABA),0,0
+cM15 (ACh),431,129
+

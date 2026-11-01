@@ -1,0 +1,5 @@
+sample_tag,first_hop_links,second_hop_links_per_neuron,sampled_neurons,mean_paired_extra_active_neurons,sd_paired_extra_active_neurons,mean_paired_extra_spikes,positive_pairs_active_neurons,positive_pairs_spikes,active_neuron_gain_fraction_of_sample
+h50_k10,50,10,412,22.7,3.020301677353145,96.8,10,10,0.055231143552311436
+h100_k20,100,20,1338,29.6,10.34085747572866,106.7,10,10,0.022139117427075545
+h150_k30,150,30,2600,50.8,14.695426348206288,160.9,10,10,0.019545979222777992
+

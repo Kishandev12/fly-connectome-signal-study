@@ -1,0 +1,22 @@
+# Large FlyWire input files are downloaded separately (see README.md).
+data/**
+!data/.gitkeep
+!data/annotations/
+data/annotations/**
+!data/annotations/.gitkeep
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Event-level and sampled-network files can be regenerated and are large.
+results/lif/*_spikes.csv
+results/lif/*_sampled_circuit_edges.csv
+results/lif/*_sampled_circuit_nodes.csv
+results/lif/*_trial_metrics.csv
+results/neuron_connection_counts.csv
+results/whole_brain/*_spikes.csv
+results/whole_brain/*_active_neurons.csv
+

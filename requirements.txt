@@ -1,0 +1,6 @@
+matplotlib>=3.8
+pandas>=2.2
+pyarrow>=18
+brian2>=2.11
+joblib>=1.4
+
