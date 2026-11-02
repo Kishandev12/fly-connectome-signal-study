@@ -93,6 +93,8 @@ Open `results/male_cns/threshold_comparison.html` to inspect the routes; the acc
 
 The MaleCNS dataset is licensed CC-BY; cite the dataset and authors when sharing derived results. See [DATA_LICENSE.md](DATA_LICENSE.md) and the [official download page](https://male-cns.janelia.org/download/).
 
+See [MALECNS_RESULTS.md](MALECNS_RESULTS.md) for the observed route comparison, interpretation, reproducibility steps, and a CV-ready summary. The interactive chart and detailed CSV are generated locally under `results/male_cns/` and are excluded from Git; the key results are reproduced in the Markdown report for GitHub readers.
+
 ## Experimental full-brain attempt (resource-heavy)
 
 The earlier FlyWire v783 data contain connectivity for about 138,639 neurons and more than 15 million directed neuron-pair connections. `simulate_whole_brain.py` is an experimental full-brain Brian2 attempt. It exceeded available memory on the project computer in previous runs. It remains here for future optimization; the targeted MaleCNS demo above is the practical next step on a memory-limited laptop.
