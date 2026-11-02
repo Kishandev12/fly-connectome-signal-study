@@ -3,4 +3,6 @@ pandas>=2.2
 pyarrow>=18
 brian2>=2.11
 joblib>=1.4
+neuprint-python>=0.6.4
+plotly>=5.20
 
