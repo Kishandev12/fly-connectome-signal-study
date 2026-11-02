@@ -34,8 +34,8 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     client = Client("https://neuprint.janelia.org", dataset="male-cns:v1.0", token=token)
     print("Looking up R1-R6 visual neurons and DNg13 descending neurons in MaleCNS v1.0...")
-    sources, _ = fetch_neurons(NeuronCriteria(type="R1-R6"), omit_rois=True, client=client)
-    targets, _ = fetch_neurons(NeuronCriteria(type="DNg13"), omit_rois=True, client=client)
+    sources = fetch_neurons(NeuronCriteria(type="R1-R6"), omit_rois=True, client=client)
+    targets = fetch_neurons(NeuronCriteria(type="DNg13"), omit_rois=True, client=client)
     if sources.empty or targets.empty:
         raise SystemExit(
             f"Could not find both cell types (R1-R6: {len(sources)}, DNg13: {len(targets)}). "
