@@ -49,6 +49,8 @@ This builds 50×10, 100×20, and 150×30 strongest-link samples, runs paired mea
 ## Project layout
 
 - `simulate_visual_hub.py` — streams the large connectivity table in batches and simulates sampled circuits.
+- `male_cns_visual_motor.py` / `compare_male_cns_thresholds.py` — query and visualize a MaleCNS visual-to-motor route and compare shortest paths under edge-weight filters.
+- `MALECNS_PROJECT_NOTE.md` — beginner-friendly explanation, limitations, attribution, and a draft CV description for the MaleCNS extension.
 - `simulate_whole_brain.py` — experimental full-v783 LIF pilot that streams connections into disk-backed numeric arrays and adds Brian2 synapses in bounded chunks. It may still need several GB of available memory and can be slow on the NumPy backend.
 - `run_sensitivity.py` — automates three sample sizes.
 - `run_project.py` / `run_project.bat` — one-command default pipeline / Windows launcher.
@@ -67,14 +69,27 @@ Install the added dependencies if needed:
 python -m pip install neuprint-python plotly
 ```
 
-Create a neuPrint account and API token at [neuPrint](https://neuprint.janelia.org/). Keep the token private and set it only in your local terminal:
+Create a neuPrint account and API token at [neuPrint](https://neuprint.janelia.org/). Keep the token private and set it only in your local terminal. In PowerShell:
 
 ```powershell
 $env:NEUPRINT_TOKEN = 'paste-your-token-here'
 python male_cns_visual_motor.py
 ```
 
-Open `results/male_cns/male_cns_visual_motor.html` in a browser. If no route is found with the default minimum edge weight, try `python male_cns_visual_motor.py --min-weight 1`. The script queries at most a few candidate cell pairs and does not download the full connectome. Generated route files are ignored by Git.
+In Command Prompt, use:
+
+```cmd
+set "NEUPRINT_TOKEN=paste-your-token-here"
+python male_cns_visual_motor.py
+```
+
+Open `results/male_cns/male_cns_visual_motor.html` in a browser. If no route is found with the default minimum edge weight, try `python male_cns_visual_motor.py --min-weight 1`. Then compare the same selected endpoints under several connection filters:
+
+```powershell
+python compare_male_cns_thresholds.py
+```
+
+Open `results/male_cns/threshold_comparison.html` to inspect the routes; the accompanying CSV lists each route and its edge weights. The script queries at most a few candidate cell pairs for the first route and does not download the full connectome. Generated route files are ignored by Git. See [MALECNS_PROJECT_NOTE.md](MALECNS_PROJECT_NOTE.md) for the study question, interpretation, limitations, and a CV-ready description.
 
 The MaleCNS dataset is licensed CC-BY; cite the dataset and authors when sharing derived results. See [DATA_LICENSE.md](DATA_LICENSE.md) and the [official download page](https://male-cns.janelia.org/download/).
 
