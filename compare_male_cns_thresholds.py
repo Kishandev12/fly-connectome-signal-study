@@ -37,7 +37,7 @@ def main() -> None:
 
     client = Client("https://neuprint.janelia.org", dataset="male-cns:v1.0", token=token)
     rows: list[dict] = []
-    route_rows: list[tuple[int, pd.DataFrame]] = []
+    routes_by_threshold: dict[int, pd.DataFrame] = {}
     for threshold in sorted(set(args.thresholds)):
         paths = fetch_shortest_paths(source_id, target_id, min_weight=threshold,
                                      timeout=args.timeout, client=client)
@@ -57,7 +57,7 @@ def main() -> None:
             "cell_types": " -> ".join(types),
             "edge_synapse_counts": " -> ".join(str(int(v)) for v in route["weight"].fillna(0).tolist()[1:]),
         })
-        route_rows.append((threshold, route))
+        routes_by_threshold[threshold] = route
         print(f"threshold {threshold}: {len(route) - 1} hops; " + " -> ".join(types))
 
     summary = pd.DataFrame(rows)
@@ -65,8 +65,17 @@ def main() -> None:
 
     colors = ["#38bdf8", "#f59e0b", "#a78bfa", "#fb7185", "#34d399", "#f97316"]
     fig = go.Figure()
-    for row_idx, (threshold, route) in enumerate(route_rows):
-        yy = len(route_rows) - row_idx - 1
+    for row_idx, summary_row in enumerate(rows):
+        threshold = int(summary_row["min_synapses_per_edge"])
+        yy = len(rows) - row_idx - 1
+        route = routes_by_threshold.get(threshold)
+        if route is None:
+            fig.add_trace(go.Scatter(
+                x=[0], y=[yy], mode="text", text=[f"No route found at minimum {threshold}"],
+                textposition="middle right", textfont={"color": "#cbd5e1", "size": 14},
+                hoverinfo="skip", showlegend=False,
+            ))
+            continue
         xx = list(range(len(route)))
         edge_weights = route["weight"].fillna(0).astype(int).tolist()
         fig.add_trace(go.Scatter(
@@ -85,7 +94,7 @@ def main() -> None:
         paper_bgcolor="#0b1220", plot_bgcolor="#0b1220",
         font={"color": "#e2e8f0"},
         xaxis={"title": "Hop along shortest route", "dtick": 1, "gridcolor": "#263449"},
-        yaxis={"visible": False, "range": [-0.7, max(0, len(route_rows) - 0.3)]},
+        yaxis={"visible": False, "range": [-0.7, max(0, len(rows) - 0.3)]},
         margin={"l": 40, "r": 40, "t": 90, "b": 80},
         annotations=[{"text": "Endpoints fixed to the same queried R1-R6 and DNg13 neurons. Threshold is a graph filter, not a physiological threshold.",
                       "xref": "paper", "yref": "paper", "x": 0.5, "y": -0.2,
