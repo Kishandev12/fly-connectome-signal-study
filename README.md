@@ -57,15 +57,38 @@ This builds 50×10, 100×20, and 150×30 strongest-link samples, runs paired mea
 - `reference-model/` — upstream Shiu et al. model source files with its license notice.
 - `results/` — report, plots, and compact summary outputs; large raw inputs and event-level outputs are excluded.
 
-## Next phase: scale toward the full brain
+## New direction: animate a MaleCNS visual-to-motor pathway
 
-The data contain connectivity for about 138,639 neurons and more than 15 million directed neuron-pair connections. The first full-brain attempts exceeded available memory while loading and connecting all edges at once. `simulate_whole_brain.py` now streams edge batches directly to local disk-backed arrays and builds Brian2 synapses in bounded chunks. Start with one short run:
+The current project uses the adult female FlyWire dataset. To explore the newer male CNS connectome, `male_cns_visual_motor.py` makes a small targeted query to Janelia's neuPrint service for a shortest route from an R1-R6 visual neuron to a DNg13 descending neuron. It then creates a self-contained interactive HTML animation and a CSV of the queried route. The wiring and synapse counts come from MaleCNS; the moving pulse is an illustrative model, not measured neural activity.
+
+Install the added dependencies if needed:
+
+```powershell
+python -m pip install neuprint-python plotly
+```
+
+Create a neuPrint account and API token at [neuPrint](https://neuprint.janelia.org/). Keep the token private and set it only in your local terminal:
+
+```powershell
+$env:NEUPRINT_TOKEN = 'paste-your-token-here'
+python male_cns_visual_motor.py
+```
+
+Open `results/male_cns/male_cns_visual_motor.html` in a browser. If no route is found with the default minimum edge weight, try `python male_cns_visual_motor.py --min-weight 1`. The script queries at most a few candidate cell pairs and does not download the full connectome. Generated route files are ignored by Git.
+
+The MaleCNS dataset is licensed CC-BY; cite the dataset and authors when sharing derived results. See [DATA_LICENSE.md](DATA_LICENSE.md) and the [official download page](https://male-cns.janelia.org/download/).
+
+## Experimental full-brain attempt (resource-heavy)
+
+The earlier FlyWire v783 data contain connectivity for about 138,639 neurons and more than 15 million directed neuron-pair connections. `simulate_whole_brain.py` is an experimental full-brain Brian2 attempt. It exceeded available memory on the project computer in previous runs. It remains here for future optimization; the targeted MaleCNS demo above is the practical next step on a memory-limited laptop.
+
+If you specifically want to retry the full FlyWire run later, it can be started with:
 
 ```powershell
 python simulate_whole_brain.py --duration-ms 200
 ```
 
-This is a resource-intensive exploratory run; stop it with Ctrl+C if memory use becomes excessive. It temporarily writes about 180 MB of numeric edge-cache files under `results/whole_brain/cache/`; these are ignored by Git. The network connections are added in 250,000-edge chunks by default; lower `--connection-chunk-size` if setup still runs out of memory. It writes an event file and active-neuron table locally (ignored by Git), plus a compact run summary. If this still exceeds memory or takes too long, the next step is a sparse or neuropil-partitioned implementation. The small-subnetwork result remains a baseline, not a claim that full-brain scaling is solved.
+This is a resource-intensive exploratory run, and it may still fail or take a long time. The small-subnetwork result remains a baseline, not a claim that full-brain scaling is solved.
 
 ## Sources and attribution
 
