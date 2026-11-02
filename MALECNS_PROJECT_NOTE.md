@@ -16,6 +16,19 @@ The HTML animation turns the route into a visual pulse. Its timing and the succe
 
 The second script keeps the same R1-R6 and DNg13 body IDs fixed, then asks for shortest routes with minimum edge weights of 1, 5, 10, and 15 synapses. Comparing those routes shows how robust the graph path is to filtering weak edges. A threshold here is a data-selection rule, not a biological firing threshold.
 
+## First threshold-sensitivity result
+
+For the saved endpoint pair, the queried route changed across the two thresholds where a route was found:
+
+| Minimum synapses on every edge | Shortest route | Hops |
+| ---: | --- | ---: |
+| 1 | R1-R6 → L2 → Dm17 → 5-HTPMPV03 → DNg13 | 4 |
+| 5 | R1-R6 → L2 → TmY3 → LPLC4 → AN06B009 → DNg13 | 5 |
+| 10 | No route found | — |
+| 15 | No route found | — |
+
+The threshold-1 route uses edge counts 4, 5, 1, and 1. The threshold-5 route uses 6, 6, 11, 6, and 10. In this pair, the shortest-path result is sensitive to weak-edge filtering: requiring at least five synapses removes the four-hop route, and the returned route has different intermediate cell types and one extra hop. At thresholds 10 and 15, the query found no route under its traced-neuron path criteria. This is a graph-structure observation for one endpoint pair, not evidence that a living fly's signal must travel along either route.
+
 ## Run the threshold comparison
 
 From the project folder, with a valid neuPrint token set in the terminal:
