@@ -20,4 +20,7 @@ results/neuron_connection_counts.csv
 results/whole_brain/*_spikes.csv
 results/whole_brain/*_active_neurons.csv
 results/whole_brain/cache/
+results/male_cns/*.html
+results/male_cns/*.csv
+.env
 
