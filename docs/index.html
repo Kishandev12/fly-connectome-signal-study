@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A small connectomics project tracing a visual-to-motor route through the Drosophila MaleCNS connectome and testing how edge filtering changes the shortest path.">
+  <title>Tracing a Fly's Visual-to-Motor Route</title>
+  <style>
+    :root { color-scheme: dark; --bg:#07111f; --panel:#101e30; --panel2:#14263b; --text:#edf5ff; --muted:#a6b8cc; --line:#263c55; --cyan:#55d6e8; --gold:#ffb52e; --violet:#b39cff; --green:#75e0b2; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:radial-gradient(ellipse at 70% -10%,#193c5a 0,transparent 44%),var(--bg); color:var(--text); font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif; }
+    a { color:var(--cyan); text-underline-offset:3px; }
+    a:hover { color:#a5f2fa; }
+    .wrap { width:min(1060px,92vw); margin:0 auto; }
+    header { padding:72px 0 46px; }
+    .eyebrow { color:var(--cyan); font-size:.8rem; font-weight:750; letter-spacing:.15em; text-transform:uppercase; }
+    h1 { max-width:850px; margin:.55rem 0 1rem; font-size:clamp(2.4rem,6vw,4.8rem); line-height:1.04; letter-spacing:-.045em; }
+    .lede { max-width:730px; color:var(--muted); font-size:1.15rem; }
+    .badges { display:flex; flex-wrap:wrap; gap:9px; margin-top:25px; }
+    .badge { border:1px solid #34516a; border-radius:99px; color:#c8d9e9; padding:5px 11px; font-size:.83rem; }
+    section { margin:25px 0 44px; }
+    h2 { font-size:clamp(1.5rem,3vw,2.15rem); line-height:1.2; letter-spacing:-.025em; margin:0 0 10px; }
+    .intro { color:var(--muted); margin:0 0 20px; }
+    .finding { display:grid; grid-template-columns:auto 1fr; gap:18px; align-items:start; padding:22px; border:1px solid #37566c; border-radius:17px; background:linear-gradient(125deg,#11283a,#102133); }
+    .finding .mark { display:grid; place-items:center; width:44px; height:44px; border-radius:13px; color:#05202a; background:var(--cyan); font-size:1.35rem; font-weight:900; }
+    .finding p { margin:4px 0 0; }
+    .routes { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    .route-card,.not-found,.method,.cv { border:1px solid var(--line); border-radius:17px; background:var(--panel); padding:22px; }
+    .route-card h3,.not-found h3 { margin:0; font-size:1.13rem; }
+    .route-card small,.not-found small { display:block; margin-top:2px; color:var(--muted); }
+    .route-card.low { border-top:3px solid var(--cyan); }
+    .route-card.high { border-top:3px solid var(--gold); }
+    .path { display:flex; flex-wrap:wrap; gap:7px; align-items:center; margin:22px 0 13px; }
+    .node { padding:6px 9px; border-radius:9px; background:var(--panel2); border:1px solid #2d4862; font-weight:700; font-size:.88rem; }
+    .arrow { color:var(--muted); font-size:1.1rem; }
+    .weights { color:var(--muted); font-size:.9rem; }
+    .weights strong { color:var(--text); }
+    .not-found-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-top:16px; }
+    .not-found { padding:17px 20px; display:flex; justify-content:space-between; gap:12px; align-items:center; }
+    .status { color:var(--violet); font-size:.85rem; font-weight:700; }
+    .methods { display:grid; grid-template-columns:1.2fr .8fr; gap:16px; }
+    .method p { color:var(--muted); margin:.45rem 0 0; }
+    .method h3 { margin:0; font-size:1.05rem; }
+    .caution { border-left:3px solid var(--gold); padding-left:15px; color:#d8e2ed; }
+    .cv { background:linear-gradient(125deg,#132438,#101e30); }
+    blockquote { margin:12px 0 0; color:#dce9f5; font-size:1.03rem; }
+    footer { border-top:1px solid var(--line); padding:25px 0 40px; color:var(--muted); font-size:.9rem; }
+    footer p { margin:.45rem 0; }
+    .links { display:flex; gap:18px; flex-wrap:wrap; }
+    @media(max-width:700px) { header { padding:52px 0 30px; } .routes,.methods,.not-found-row { grid-template-columns:1fr; } .finding { grid-template-columns:1fr; } .route-card,.method { padding:18px; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div class="eyebrow">A computational neuroscience mini-project</div>
+      <h1>Tracing a fly’s visual-to-motor route</h1>
+      <p class="lede">Using Janelia’s MaleCNS connectome, we queried shortest paths from a visual neuron (R1–R6) to a descending neuron (DNg13), then asked how those paths change when low-count connections are filtered out.</p>
+      <div class="badges"><span class="badge">MaleCNS v1.0</span><span class="badge">neuPrint targeted query</span><span class="badge">Same two endpoints</span><span class="badge">Four edge filters</span></div>
+    </header>
+
+    <section aria-labelledby="finding-title">
+      <div class="finding"><div class="mark" aria-hidden="true">↗</div><div><h2 id="finding-title">The route depends on the edge filter</h2><p>At a 1-synapse minimum, the returned shortest path has 4 hops. At a 5-synapse minimum, it changes to a different 5-hop path. At minimums of 10 and 15, the query finds no path for this endpoint pair.</p></div></div>
+    </section>
+
+    <section aria-labelledby="routes-title">
+      <h2 id="routes-title">Two routes returned by the connectome query</h2>
+      <p class="intro">Each number on an arrow is the reconstructed synapse count on that directed edge.</p>
+      <div class="routes">
+        <article class="route-card low">
+          <h3>Minimum 1 synapse per edge</h3><small>4 hops · R1–R6 body ID 11139 → DNg13 body ID 11074</small>
+          <div class="path" aria-label="R1-R6 to L2 to Dm17 to 5-HTPMPV03 to DNg13">
+            <span class="node">R1–R6</span><span class="arrow">→<sup>4</sup></span><span class="node">L2</span><span class="arrow">→<sup>5</sup></span><span class="node">Dm17</span><span class="arrow">→<sup>1</sup></span><span class="node">5-HTPMPV03</span><span class="arrow">→<sup>1</sup></span><span class="node">DNg13</span>
+          </div>
+          <div class="weights">Edge counts: <strong>4 · 5 · 1 · 1</strong></div>
+        </article>
+        <article class="route-card high">
+          <h3>Minimum 5 synapses per edge</h3><small>5 hops · same source and destination</small>
+          <div class="path" aria-label="R1-R6 to L2 to TmY3 to LPLC4 to AN06B009 to DNg13">
+            <span class="node">R1–R6</span><span class="arrow">→<sup>6</sup></span><span class="node">L2</span><span class="arrow">→<sup>6</sup></span><span class="node">TmY3</span><span class="arrow">→<sup>11</sup></span><span class="node">LPLC4</span><span class="arrow">→<sup>6</sup></span><span class="node">AN06B009</span><span class="arrow">→<sup>10</sup></span><span class="node">DNg13</span>
+          </div>
+          <div class="weights">Edge counts: <strong>6 · 6 · 11 · 6 · 10</strong></div>
+        </article>
+      </div>
+      <div class="not-found-row">
+        <div class="not-found"><div><h3>Minimum 10 synapses per edge</h3><small>No path returned</small></div><span class="status">Filtered out</span></div>
+        <div class="not-found"><div><h3>Minimum 15 synapses per edge</h3><small>No path returned</small></div><span class="status">Filtered out</span></div>
+      </div>
+    </section>
+
+    <section class="methods" aria-label="Method and caveats">
+      <article class="method"><h3>What we did</h3><p>We used neuPrint to request a shortest route for the same R1–R6 and DNg13 body IDs at four minimum synapse-count filters. The separate HTML animation illustrates a pulse along one queried route. It is a schematic, not a neural dynamics simulation.</p></article>
+      <article class="method"><h3>What this does not show</h3><p class="caution">This is a graph-structure result for one endpoint pair. Synapse counts are not calibrated physiological strengths. “No path returned” is limited to the query criteria; it does not prove no biological communication.</p></article>
+    </section>
+
+    <section class="cv">
+      <div class="eyebrow">Project summary</div>
+      <blockquote>Built a Python connectomics analysis using Janelia’s MaleCNS neuPrint API; queried a visual-to-descending-neuron route and evaluated shortest-path sensitivity to synapse-count filtering, with explicit limits separating connectome structure from simulated activity.</blockquote>
+    </section>
+
+    <footer>
+      <div class="links"><a href="https://github.com/Kishandev12/fly-connectome-signal-study">Source code</a><a href="../MALECNS_RESULTS.md">Methods and full result</a><a href="https://male-cns.janelia.org/download/">MaleCNS data/API</a><a href="https://www.janelia.org/project-team/flyem/male-cns-connectome">Janelia project</a></div>
+      <p>MaleCNS dataset © its contributors, licensed CC-BY. Please cite the dataset authors when reusing this analysis. This student project is independent of Janelia and Google Research.</p>
+    </footer>
+  </main>
+</body>
+</html>
+
