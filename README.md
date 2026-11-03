@@ -95,7 +95,7 @@ The MaleCNS dataset is licensed CC-BY; cite the dataset and authors when sharing
 
 See [MALECNS_RESULTS.md](MALECNS_RESULTS.md) for the observed route comparison, interpretation, reproducibility steps, and a CV-ready summary. The interactive chart and detailed CSV are generated locally under `results/male_cns/` and are excluded from Git; the key results are reproduced in the Markdown report for GitHub readers.
 
-A self-contained, no-install showcase page is available at [`docs/index.html`](docs/index.html). Open it in a browser for a compact visual overview of the project; it contains no API token and needs no server or external JavaScript libraries.
+A self-contained, no-install showcase page is available at [`docs/index.html`](docs/index.html). It includes the route results and an interactive Monte Carlo toy pulse model; it contains no API token and needs no server or external JavaScript libraries.
 
 ## Experimental full-brain attempt (resource-heavy)
 
