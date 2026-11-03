@@ -38,6 +38,22 @@
     .not-found-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-top:16px; }
     .not-found { padding:17px 20px; display:flex; justify-content:space-between; gap:12px; align-items:center; }
     .status { color:var(--violet); font-size:.85rem; font-weight:700; }
+    .toy { border:1px solid #34516a; border-radius:18px; background:linear-gradient(135deg,#10263a,#101b2a); padding:24px; }
+    .toy-controls { display:flex; flex-wrap:wrap; align-items:center; gap:15px; margin:18px 0 22px; }
+    .toy-controls label { color:var(--muted); font-weight:650; }
+    .toy-controls input { accent-color:var(--cyan); width:min(280px,55vw); vertical-align:middle; margin-left:8px; }
+    .toy-controls output { color:var(--text); font-variant-numeric:tabular-nums; min-width:2ch; display:inline-block; }
+    button { border:0; border-radius:10px; padding:10px 14px; color:#06212a; background:var(--cyan); font:inherit; font-weight:800; cursor:pointer; }
+    button:hover { background:#a5f2fa; }
+    button:focus-visible,input:focus-visible { outline:3px solid #fff; outline-offset:3px; }
+    .trial-row { margin:18px 0; }
+    .trial-head { display:flex; justify-content:space-between; gap:12px; margin-bottom:7px; font-weight:700; }
+    .trial-head output { color:var(--text); font-variant-numeric:tabular-nums; }
+    .bar-bg { width:100%; height:14px; border-radius:99px; background:#26384d; overflow:hidden; }
+    .bar { height:100%; width:0; border-radius:inherit; transition:width .35s ease; }
+    .bar.cyan { background:var(--cyan); }
+    .bar.gold { background:var(--gold); }
+    .toy-note { color:var(--muted); font-size:.92rem; margin:18px 0 0; }
     .methods { display:grid; grid-template-columns:1.2fr .8fr; gap:16px; }
     .method p { color:var(--muted); margin:.45rem 0 0; }
     .method h3 { margin:0; font-size:1.05rem; }
@@ -88,6 +104,30 @@
       </div>
     </section>
 
+    <section aria-labelledby="toy-title">
+      <h2 id="toy-title">Try a toy pulse-transmission model</h2>
+      <p class="intro">Change the weight scale, then run 5,000 simulated pulses along each returned route.</p>
+      <div class="toy">
+        <div class="toy-controls">
+          <label for="weight-scale">Weight scale <output id="weight-scale-value">6</output>
+            <input id="weight-scale" type="range" min="1" max="30" value="6">
+          </label>
+          <button id="run-pulses" type="button">Run 5,000 toy pulses</button>
+        </div>
+        <div class="trial-row">
+          <div class="trial-head"><span>1-synapse route · 4 hops</span><output id="route-one-result">Ready</output></div>
+          <div class="bar-bg" role="progressbar" aria-label="Toy pulse completion rate for the 1-synapse route" aria-valuemin="0" aria-valuemax="100"><div id="route-one-bar" class="bar cyan"></div></div>
+          <small id="route-one-exact" class="weights">Exact model probability: —</small>
+        </div>
+        <div class="trial-row">
+          <div class="trial-head"><span>5-synapse route · 5 hops</span><output id="route-five-result">Ready</output></div>
+          <div class="bar-bg" role="progressbar" aria-label="Toy pulse completion rate for the 5-synapse route" aria-valuemin="0" aria-valuemax="100"><div id="route-five-bar" class="bar gold"></div></div>
+          <small id="route-five-exact" class="weights">Exact model probability: —</small>
+        </div>
+        <p class="toy-note"><strong>Assumption:</strong> each edge passes a pulse independently with probability <code>1 − exp(−synapse count / weight scale)</code>; a pulse stops at its first failed edge. This adjustable rule is invented for exploration. It is not fitted to fly physiology, and synapse counts are not measured transmission probabilities.</p>
+      </div>
+    </section>
+
     <section class="methods" aria-label="Method and caveats">
       <article class="method"><h3>What we did</h3><p>We used neuPrint to request a shortest route for the same R1–R6 and DNg13 body IDs at four minimum synapse-count filters. The separate HTML animation illustrates a pulse along one queried route. It is a schematic, not a neural dynamics simulation.</p></article>
       <article class="method"><h3>What this does not show</h3><p class="caution">This is a graph-structure result for one endpoint pair. Synapse counts are not calibrated physiological strengths. “No path returned” is limited to the query criteria; it does not prove no biological communication.</p></article>
@@ -103,6 +143,39 @@
       <p>MaleCNS dataset © its contributors, licensed CC-BY. Please cite the dataset authors when reusing this analysis. This student project is independent of Janelia and Google Research.</p>
     </footer>
   </main>
+  <script>
+    (() => {
+      const scale = document.getElementById("weight-scale");
+      const scaleOut = document.getElementById("weight-scale-value");
+      const routes = [
+        { weights: [4, 5, 1, 1], result: "route-one-result", bar: "route-one-bar", exact: "route-one-exact" },
+        { weights: [6, 6, 11, 6, 10], result: "route-five-result", bar: "route-five-bar", exact: "route-five-exact" }
+      ];
+      const trials = 5000;
+      scale.addEventListener("input", () => { scaleOut.value = scale.value; });
+      document.getElementById("run-pulses").addEventListener("click", () => {
+        const s = Number(scale.value);
+        for (const route of routes) {
+          let reached = 0;
+          for (let trial = 0; trial < trials; trial++) {
+            let completed = true;
+            for (const weight of route.weights) {
+              const p = 1 - Math.exp(-weight / s);
+              if (Math.random() >= p) { completed = false; break; }
+            }
+            if (completed) reached++;
+          }
+          const percent = 100 * reached / trials;
+          const exact = 100 * route.weights.reduce((product, weight) => product * (1 - Math.exp(-weight / s)), 1);
+          document.getElementById(route.result).textContent = `${reached.toLocaleString()} / ${trials.toLocaleString()} (${percent.toFixed(1)}%)`;
+          document.getElementById(route.bar).style.width = `${percent}%`;
+          document.getElementById(route.bar).parentElement.setAttribute("aria-valuenow", percent.toFixed(1));
+          document.getElementById(route.exact).textContent = `Exact probability under toy rule: ${exact.toFixed(2)}%`;
+        }
+      });
+      document.getElementById("run-pulses").click();
+    })();
+  </script>
 </body>
 </html>
 
