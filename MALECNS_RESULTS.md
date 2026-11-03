@@ -48,6 +48,8 @@ The project queried the MaleCNS v1.0 dataset through neuPrint. It selected a sho
 
 The separate HTML pulse animation is a schematic teaching aid. Its timing and node highlights are illustrative, not a model of membrane voltage, neurotransmitter kinetics, or recorded firing.
 
+The showcase page also contains a toy Monte Carlo comparison: it runs 5,000 pulses along each returned route, assigning each edge a pass probability of `1 - exp(-synapse_count / scale)`. The scale is an adjustable, arbitrary parameter. This explores how a hypothetical transmission rule interacts with the two route weight lists; it is not a calibrated neural model and must not be presented as a biological estimate.
+
 ## Reproduce
 
 From this project folder, with a current neuPrint API token set privately in the terminal:
@@ -60,7 +62,7 @@ The script writes a detailed CSV and interactive HTML chart under `results/male_
 
 ## CV-ready description
 
-> Built a Python connectomics analysis using Janelia's MaleCNS neuPrint API; queried a visual-to-descending-neuron route and evaluated shortest-path sensitivity to synapse-count filtering, with explicit limits separating connectome structure from simulated activity.
+> Built a Python connectomics analysis using Janelia's MaleCNS neuPrint API; queried a visual-to-descending-neuron route, evaluated shortest-path sensitivity to synapse-count filtering, and added an interactive Monte Carlo toy model while distinguishing graph data from uncalibrated simulation assumptions.
 
 ## Data source and attribution
 
